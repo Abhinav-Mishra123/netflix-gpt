@@ -1,31 +1,137 @@
-import React, { useState } from 'react';
-import Header from './Header';
+import { useState, useRef } from "react";
+import Header from "./Header";
+import { checkValidData } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import Swal from 'sweetalert2';
+import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { BG_BANNER, USER_AVATAR } from "../utils/constants";
 
 const Login = () => {
+  const [isSignInForm, setIsSignInForm] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate();
 
-    const [isSignInForm , setIsSignInForm] = useState(true)
+  const name = useRef(null);
+  const email = useRef(null);
+  const password = useRef(null);
 
+  const handleButtonClick = () => {
+    const message = checkValidData(email.current.value, password.current.value);
+    setErrorMessage(message);
+    if (message) return;
 
-    const toggleSignInForm = ()=> {
-        setIsSignInForm(!isSignInForm);
+    if (!isSignInForm) {
+      // Sign Up Logic
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: USER_AVATAR,
+          })
+            .then(() => {
+              navigate("/browse");
+              Swal.fire({
+                title: 'Signed In!',
+                text: `Welcome, ${user.displayName}!`,
+                icon: 'success',
+                confirmButtonText: 'OK',
+                timer: 2000,
+              });
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      // Sign In Logic
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          navigate("/browse");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
     }
+  };
 
-
+  const toggleSignInForm = () => {
+    setIsSignInForm(!isSignInForm);
+  };
   return (
-    <div className='login-section relative h-screen'>
+    <div>
       <Header />
-      <form className='absolute p-12 w-3/12 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-80 text-white rounded'>
-        <h3 className='text-3xl mb-2'>{isSignInForm ? "Sign In" : "Sign up"}</h3>
+      <div className="absolute">
+        <img
+          src={BG_BANNER}
+          alt="logo"
+        />
+      </div>
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="w-3/12 absolute p-12 bg-black my-36 mx-auto right-0 left-0 text-white rounded-lg bg-opacity-80"
+      >
+        <h1 className="font-bold text-3xl py-4">
+          {isSignInForm ? "Sign In" : "Sign Up"}
+        </h1>
+
         {!isSignInForm && (
-        <input type='text' placeholder='Full Name' className='p-3 my-4 w-full rounded bg-gray-200 text-black' />
+          <input
+            ref={name}
+            type="text"
+            placeholder="Full Name"
+            className="p-4 my-4 w-full bg-gray-700"
+          />
         )}
-        <input type='text' placeholder='Email Address' className='p-3 my-4 w-full rounded bg-gray-200 text-black' />
-        <input type='password' placeholder='Password' className='p-3 my-4 w-full rounded bg-gray-200 text-black' />
-        <button className='p-5 py-2 mt-4 w-full bg-red-600  my-4 h-12 text-xl rounded hover:bg-red-700'>{isSignInForm ? "Sign In" : "Sign up"}</button>
-        <p onClick={toggleSignInForm} className='cursor-pointer'>{isSignInForm ? "New to Netflix Sign up Now" : "Already Registered? Sign In Now"}</p>
+        <input
+          ref={email}
+          type="text"
+          placeholder="Email Address"
+          className="p-4 my-4 w-full bg-gray-700"
+        />
+        <input
+          ref={password}
+          type="password"
+          placeholder="Password"
+          className="p-4 my-4 w-full bg-gray-700"
+        />
+        <p className="text-red-500 font-bold text-lg py-2">{errorMessage}</p>
+        <button
+          className="p-4 my-6 bg-red-700 w-full rounded-lg"
+          onClick={handleButtonClick}
+        >
+          {isSignInForm ? "Sign In" : "Sign Up"}
+        </button>
+        <p className="py-4 cursor-pointer" onClick={toggleSignInForm}>
+          {isSignInForm
+            ? "New to Netflix? Sign Up Now"
+            : "Already registered? Sign In Now."}
+        </p>
       </form>
     </div>
-  )
-}
-
+  );
+};
 export default Login;

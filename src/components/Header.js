@@ -1,17 +1,96 @@
-import React from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../utils/firebase";
+import { useEffect, useState } from "react";
+import { addUser, removeUser } from "../utils/userSlice";
+import { LOGO } from "../utils/constants";
 
 const Header = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const user = useSelector((store) => store.user);
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+      })
+      .catch((error) => {
+        navigate("/error");
+      });
+  };
+
+  useEffect(() => {
+   const unsubscribe =  onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(
+          addUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            photoURL: photoURL,
+          })
+        );
+        navigate("/browse");
+      } else {
+        dispatch(removeUser());
+        navigate("/");
+      }
+    });
+    return () => unsubscribe();
+  }, [dispatch]);
+
   return (
-    <div className="relative h-screen bg-cover bg-center" style={{ backgroundImage: `url('https://assets.nflxext.com/ffe/siteui/vlv3/20bf1f4d-1c73-48fd-8689-310d6dd80efc/304b7563-abfe-41bf-95d0-8bb58c03bea6/US-en-20240812-POP_SIGNUP_TWO_WEEKS-perspective_WEB_633da30f-4247-4a0f-b146-0501cbf91542_large.jpg')` }}>
-      <div className="absolute top-5 left-5 bg-black bg-opacity-10 p-2 rounded">
-        <img
-          alt="logo"
-          src="https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
-          className="w-44"
-        />
+    <div className="absolute w-screen px-8 py-2 bg-gradient-to-b from-black z-10 flex justify-between">
+      <img
+        className="w-44"
+        src={LOGO}
+        alt="logo"
+      />
+      {user && (
+        <div className="relative">
+      <div
+        className="flex items-center p-2 cursor-pointer"
+        onMouseEnter={() => setIsDropdownVisible(true)}
+        onMouseLeave={() => setIsDropdownVisible(false)}
+      >
+        {/* <img
+          className="w-12 h-12 rounded-full"
+          alt="usericon"
+          src={user?.photoURL}
+        /> */}
+        <div className="username bg-white rounded-full border-2 border-black">
+        <p className="p-2 font-bold text-xl rounded-full">
+        {user?.displayName
+        .split(" ")
+        .map((name)=> name[0].toUpperCase())
+        .join("")
+        }
+        </p>
+        </div>
       </div>
+      
+      {isDropdownVisible && (
+        <div
+          className="absolute right-0 top-14 w-auto bg-gray-800 text-white rounded-lg shadow-lg"
+          onMouseEnter={() => setIsDropdownVisible(true)}
+          onMouseLeave={() => setIsDropdownVisible(false)}
+        >
+        <p className="px-4 py-2">Sign In as</p>
+        <p className="px-4 flex-wrap ">{user?.email}</p>
+          <p className="px-4 py-2">{user?.displayName}</p>
+          <button
+            onClick={handleSignOut}
+            className="w-full text-left px-4 py-2 hover:bg-red-600"
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
+    </div>
+      )}
     </div>
   );
 };
-
 export default Header;
