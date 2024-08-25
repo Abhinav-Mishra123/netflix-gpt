@@ -11,7 +11,7 @@ const MovieDetails = () => {
 
   if (!movie) return <div>Loading...</div>;
 
-  return (
+  return  (
     <div className="movie-details-container">
       <h1>{movie.title}</h1>
       <p>{movie.overview}</p>
