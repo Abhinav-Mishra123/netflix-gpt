@@ -2,7 +2,6 @@ import React from 'react'
 import MovieCard from './MovieCard'
 
 const MovieList = ({title, movies}) => {
-  console.log("movies", movies);
   if(!movies) return (
     <>
       <h1>Loading</h1>
