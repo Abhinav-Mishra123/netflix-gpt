@@ -6,10 +6,10 @@ import { BG_BANNER } from "../utils/constants";
 const GptSearch = () => {
   return (
     <div className="gptSearch-container">
-    <div className="absolute bg-shadow">
+    <div className="absolute bg-shadow w-full">
         <img
           src={BG_BANNER}
-          alt="logo"
+          alt="logo" className="h-screen w-full object-center object-cover"
         />
       </div>
       <GptSearchBar />

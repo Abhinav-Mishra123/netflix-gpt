@@ -11,24 +11,33 @@ const MovieCard = ({ id, title, posterPath, rating, releaseDate }) => {
   };
 
   if (!posterPath) return null;
+
   return (
-    <div className="movieCard-container bg-black relative m-3 cursor-pointer">
+    <div className="movieCard-container bg-black relative w-48 min-w-[12rem] cursor-pointer">
       <Link to={`/browse/movie/${id}`}>
-        <div className="poster-container w-48 h-200">
+        <div className="poster-container h-[300px] overflow-hidden rounded-sm">
           <img
             src={IMG_CDN_URL + posterPath}
             alt="movie poster"
-            className="rounded-sm w-full h-200"
+            className="w-full h-full object-cover"
           />
         </div>
-        <div className="movie-details relative">
-          <p className="movie-name text-white absolute bottom-8 p-2 text-center bg-slate-900 w-full ">
+        <div className="movie-details mt-2">
+          <p className="movie-name text-white text-center text-sm font-semibold">
             {SortTitle(title)}
           </p>
-          <div className="movierating flex justify-between items-center my-2 px-1">
-            <p className="release-date text-white">{releaseDate}</p>
-            <p className="movie-rating text-white flex justify-center items-center">
-              <img src={START_ICON} width={15} height={15} alt="Star icon" />
+          <div className="movierating flex justify-between items-center my-2">
+            <p className="release-date text-gray-400 text-xs">
+              {releaseDate}
+            </p>
+            <p className="movie-rating text-yellow-400 text-sm flex items-center">
+              <img
+                src={START_ICON}
+                width={15}
+                height={15}
+                alt="Star icon"
+                className="mr-1"
+              />
               {rating.toFixed(1)}/10
             </p>
           </div>

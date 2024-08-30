@@ -60,7 +60,7 @@ const Header = () => {
       </Link>
       <div className="right-header flex items-center">
         {showGptSearch && (
-          <select className="p-2 m-3" onChange={handleLanguageChange}>
+          <select className="px-2 mx-3 py-1 rounded-md dnone" onChange={handleLanguageChange}>
             {SUPPORTED_LANGUAGE.map((lang) => (
               <option
                 className="p-3 my-1"
@@ -72,12 +72,14 @@ const Header = () => {
             ))}
           </select>
         )}
+        {user && 
         <button
           onClick={handleGptSearch}
-          className="h-12 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+          className="h-8 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-4 py-1 me-1 mb-1 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
         >
           {showGptSearch ? "Homepage" : "Search"}
         </button>
+        }
         {user && (
           <div className="relative">
             <div
@@ -99,7 +101,14 @@ const Header = () => {
                       .join("")}
                   </p>
                 ) : (
-                  <p className="p-2 font-bold text-xl rounded-full"><img src={USER_AVATAR} width={20} height={20} alt="user profile"/></p>
+                  <p className="p-2 font-bold text-xl rounded-full user_icon">
+                    <img
+                      src={USER_AVATAR}
+                      width={20}
+                      height={20}
+                      alt="user profile"
+                    />
+                  </p>
                 )}
               </div>
             </div>

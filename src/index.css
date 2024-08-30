@@ -29,3 +29,12 @@ html, body {
 .poster-container{
     height: 288px;
 }
+@media (max-width:768px) {
+    .dnone{
+        display: none;
+    }
+    .user_icon{
+        width: 35px;
+        height: 35px;
+    }
+}

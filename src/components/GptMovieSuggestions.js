@@ -6,7 +6,7 @@ const GptMovieSuggestions = () => {
   const searchMovieList = useSelector((store) => store.gpt.movie);
   console.log("SearchMovieList from redux store", searchMovieList);
   return (
-    <div className='movieList'>
+    <div className='movieList bg-white'>
     {searchMovieList && searchMovieList.length > 0 ? (
       <MovieList title="Search Results" movies={searchMovieList} />
     ) : (
